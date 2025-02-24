@@ -12,10 +12,20 @@ import { LuUserRound } from "react-icons/lu";
 import { RiMovie2AiFill } from "react-icons/ri";
 
 import { useNavigate } from "react-router-dom";
+import MyCart from "./MyCart";
 
-export function NavBar({ onSearch }) {
+export function NavBar({
+  onSearch,
+  toggleCart,
+  isCartOpen,
+  cartItems,
+  removeFromCart,
+  clearCart
+}) {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
+
+  console.log("cartItems:", cartItems);
 
   // Handle search input change
   const handleSearchChange = async (e) => {
@@ -54,68 +64,81 @@ export function NavBar({ onSearch }) {
   };
 
   return (
-    <nav className="z-50 flex h-16 w-full items-center justify-between bg-[#030712] px-8 text-white shadow-md">
-      {/* Left side */}
-      <div className="flex items-center gap-12">
-        {/* Website logo */}
-        <button
-          className="flex items-center gap-2"
-          onClick={(event) => {
-            event.preventDefault();
-            navigate("/");
-          }}
-        >
-          <RiMovie2AiFill className="h-7 w-7 text-violet-500" />
-          <p className="text-xl font-semibold">MovieMart</p>
-        </button>
-
-        {/* Tabs */}
-        <div className="flex items-center gap-6 text-sm text-white">
+    <>
+      <nav className="relative z-30 flex h-16 w-full items-center justify-between bg-[#030712] px-8 text-white shadow-md">
+        {/* Left side */}
+        <div className="flex items-center gap-12">
+          {/* Website logo */}
           <button
-            className="transition-colors duration-300 hover:text-violet-500"
+            className="flex items-center gap-2"
             onClick={(event) => {
               event.preventDefault();
               navigate("/");
             }}
           >
-            Home
+            <RiMovie2AiFill className="h-7 w-7 text-violet-500" />
+            <p className="text-xl font-semibold">MovieMart</p>
           </button>
-          <button className="transition-colors duration-300 hover:text-violet-500">
-            New Releases
-          </button>
-          <button className="transition-colors duration-300 hover:text-violet-500">
-            Categories
-          </button>
-        </div>
-      </div>
 
-      {/* Right side */}
-      <div className="flex items-center gap-4">
-        {/* Search box */}
-        <div className="flex w-[15rem] items-center gap-2 rounded-full bg-gray-800 px-4 py-2">
-          <input
-            type="text"
-            placeholder="Search ..."
-            value={searchTerm}
-            onChange={handleSearchChange}
-            className="w-full bg-transparent text-sm text-white placeholder:text-gray-400 focus:outline-none"
-          />
-
-          <IoSearch className="text-gray-400" />
+          {/* Tabs */}
+          <div className="flex items-center gap-6 text-sm text-white">
+            <button
+              className="transition-colors duration-300 hover:text-violet-500"
+              onClick={(event) => {
+                event.preventDefault();
+                navigate("/");
+              }}
+            >
+              Home
+            </button>
+            <button className="transition-colors duration-300 hover:text-violet-500">
+              New Releases
+            </button>
+            <button className="transition-colors duration-300 hover:text-violet-500">
+              Categories
+            </button>
+          </div>
         </div>
 
-        <button>
-          <FaHeart className="h-5 w-5 text-white transition-colors duration-300 hover:text-gray-300" />
-        </button>
-        <button>
-          <FaCartShopping className="h-5 w-5 text-white transition-colors duration-300 hover:text-gray-300" />
-        </button>
+        {/* Right side */}
+        <div className="flex items-center gap-4">
+          {/* Search box */}
+          <div className="flex w-[15rem] items-center gap-2 rounded-full bg-gray-800 px-4 py-2">
+            <input
+              type="text"
+              placeholder="Search ..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="w-full bg-transparent text-sm text-white placeholder:text-gray-400 focus:outline-none"
+            />
 
-        <button className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-800">
-          <LuUserRound className="h-5 w-5 text-gray-400" />
-        </button>
-      </div>
-    </nav>
+            <IoSearch className="text-gray-400" />
+          </div>
+
+          <button>
+            <FaHeart className="h-5 w-5 text-white transition-colors duration-300 hover:text-gray-300" />
+          </button>
+          <button onClick={toggleCart}>
+            <FaCartShopping className="h-5 w-5 text-white transition-colors duration-300 hover:text-gray-300" />
+          </button>
+
+          <button className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-800">
+            <LuUserRound className="h-5 w-5 text-gray-400" />
+          </button>
+        </div>
+      </nav>
+
+      {/* My cart */}
+      {isCartOpen && (
+        <MyCart
+          toggleCart={toggleCart}
+          isCartOpen={isCartOpen}
+          cartItems={cartItems}
+          removeFromCart={removeFromCart}
+          clearCart={clearCart}
+        />
+      )}
+    </>
   );
 }
 

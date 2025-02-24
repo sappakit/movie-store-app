@@ -8,12 +8,45 @@ import MoreLikeThisSection from "../components/homepage/MoreLikeThisSection";
 import SearchMovie from "../components/SearchMovie";
 
 function HomePage() {
+  // Movie data
   const [movies, setMovies] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
+
+  // Cart
+  const [cartItems, setCartItems] = useState([]);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+
   const [loading, setLoading] = useState(true);
 
   const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
   const BASE_URL = import.meta.env.VITE_TMDB_BASE_URL;
+
+  // Toggle cart
+  const toggleCart = () => {
+    setIsCartOpen((prev) => !prev);
+  };
+
+  // Add item to cart
+  const addToCart = (movie) => {
+    setCartItems((prevCart) => {
+      const updatedCart = [...prevCart, movie];
+      return updatedCart;
+    });
+
+    setIsCartOpen(true);
+  };
+
+  // Remove item from cart
+  const removeFromCart = (movieId) => {
+    setCartItems((prevCart) => {
+      const updatedCart = prevCart.filter((item) => item.id !== movieId);
+      return updatedCart;
+    });
+  };
+
+  const clearCart = () => {
+    setCartItems([]);
+  };
 
   // Generate a random price for each movie
   const generatePrice = (movieId) => {
@@ -49,22 +82,29 @@ function HomePage() {
     fetchMovies();
   }, []);
 
-  console.log("movie:", movies);
   console.log("searchResults:", searchResults);
+  console.log("cartItems", cartItems);
 
   return (
     <div className="flex min-h-screen flex-col bg-[#030712]">
-      <NavBar onSearch={setSearchResults} />
+      <NavBar
+        onSearch={setSearchResults}
+        toggleCart={toggleCart}
+        isCartOpen={isCartOpen}
+        cartItems={cartItems}
+        removeFromCart={removeFromCart}
+        clearCart={clearCart}
+      />
 
       {searchResults.length > 0 ? (
         <div className="pt-12">
-          <SearchMovie movies={searchResults} />
+          <SearchMovie movies={searchResults} addToCart={addToCart} />
         </div>
       ) : (
         <>
           <HeroSection movies={movies} />
           <TrendingSection movies={movies} />
-          <MoreLikeThisSection movies={movies} />
+          <MoreLikeThisSection movies={movies} addToCart={addToCart} />
         </>
       )}
 

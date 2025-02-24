@@ -1,6 +1,6 @@
 import { TallMovieCard } from "./movie-card/TallMovieCard";
 
-function SearchMovie({ movies }) {
+function SearchMovie({ movies, addToCart }) {
   // Filter out movie that has no poster image
   const filteredMovies = movies.filter((movie) => movie.poster_path);
 
@@ -10,7 +10,7 @@ function SearchMovie({ movies }) {
 
       <div className="grid auto-rows-auto grid-cols-3 gap-8 lg:grid-cols-4 xl:grid-cols-5">
         {filteredMovies.map((movie) => (
-          <TallMovieCard key={movie.id} movie={movie} />
+          <TallMovieCard key={movie.id} movie={movie} addToCart={addToCart} />
         ))}
       </div>
     </section>

@@ -1,6 +1,6 @@
 import { FaCartPlus, FaRegHeart } from "react-icons/fa6";
 
-export const TallMovieCard = ({ movie }) => {
+export const TallMovieCard = ({ movie, addToCart }) => {
   const IMAGE_BASE_URL = import.meta.env.VITE_TMDB_IMAGE_BASE_URL;
 
   const shortenTitle =
@@ -28,7 +28,10 @@ export const TallMovieCard = ({ movie }) => {
                 <FaRegHeart className="h-5 w-5" />
               </button>
 
-              <button className="flex w-full items-center justify-center gap-3 rounded-md bg-violet-600 px-2 py-2 text-xs font-medium transition-colors duration-300 hover:bg-violet-700">
+              <button
+                className="flex w-full items-center justify-center gap-3 rounded-md bg-violet-600 px-2 py-2 text-xs font-medium transition-colors duration-300 hover:bg-violet-700"
+                onClick={() => addToCart(movie)}
+              >
                 <FaCartPlus className="h-4 w-4" />
                 <span>Buy Now</span>
               </button>
