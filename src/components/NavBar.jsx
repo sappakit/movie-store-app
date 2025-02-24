@@ -20,7 +20,8 @@ export function NavBar({
   isCartOpen,
   cartItems,
   removeFromCart,
-  clearCart
+  clearCart,
+  updateQuantity
 }) {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
@@ -136,6 +137,7 @@ export function NavBar({
           cartItems={cartItems}
           removeFromCart={removeFromCart}
           clearCart={clearCart}
+          updateQuantity={updateQuantity}
         />
       )}
     </>

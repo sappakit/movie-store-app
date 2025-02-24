@@ -4,8 +4,38 @@ function MyCart({
   cartItems,
   removeFromCart,
   clearCart,
+  updateQuantity,
 }) {
   const IMAGE_BASE_URL = import.meta.env.VITE_TMDB_IMAGE_BASE_URL;
+
+  // Calculate total quantity
+  const totalQuantity = cartItems.reduce((sum, item) => sum + item.qty, 0);
+
+  // Calculate total price
+  const calculateTotal = () => {
+    return cartItems
+      .reduce((total, movie) => total + parseFloat(movie.price) * movie.qty, 0)
+      .toFixed(2);
+  };
+
+  // Apply discount
+  const applyDiscount = (total) => {
+    let discount = 0;
+    let finalPrice = parseFloat(total);
+
+    if (totalQuantity > 5) {
+      discount = 20;
+      finalPrice *= 0.8; // 20% discount
+    } else if (totalQuantity > 3) {
+      discount = 10;
+      finalPrice *= 0.9; // 10% discount
+    }
+
+    return { price: finalPrice.toFixed(2), discount };
+  };
+
+  const totalPrice = calculateTotal();
+  const discountedPrice = applyDiscount(totalPrice);
 
   return (
     <>
@@ -24,11 +54,11 @@ function MyCart({
             </div>
 
             <p className="text-sm text-gray-400">
-              {cartItems.length} {cartItems.length > 1 ? "Items" : "Item"}
+              {totalQuantity} {totalQuantity > 1 ? "Items" : "Item"}
             </p>
           </div>
 
-          {cartItems.length > 0 && (
+          {totalQuantity > 0 && (
             <div className="flex flex-col">
               <button
                 className="w-fit self-end px-2 text-sm text-gray-400 transition-colors duration-300 hover:text-gray-300"
@@ -63,13 +93,21 @@ function MyCart({
                           <p>{shortenTitle}</p>
 
                           <div className="flex items-center gap-2">
-                            <p className="text-sm text-gray-400">Qty: 1</p>
+                            <p className="text-sm text-gray-400">
+                              Qty: {movie.qty}
+                            </p>
 
                             <div className="flex gap-1">
-                              <button className="flex h-4 w-4 items-center justify-center rounded-sm bg-gray-700 text-xs transition-colors duration-300 hover:bg-gray-600">
+                              <button
+                                className="flex h-4 w-4 items-center justify-center rounded-sm bg-gray-700 text-xs transition-colors duration-300 hover:bg-gray-600"
+                                onClick={() => updateQuantity(movie.id, -1)}
+                              >
                                 -
                               </button>
-                              <button className="flex h-4 w-4 items-center justify-center rounded-sm bg-gray-700 text-xs transition-colors duration-300 hover:bg-gray-600">
+                              <button
+                                className="flex h-4 w-4 items-center justify-center rounded-sm bg-gray-700 text-xs transition-colors duration-300 hover:bg-gray-600"
+                                onClick={() => updateQuantity(movie.id, 1)}
+                              >
                                 +
                               </button>
                             </div>
@@ -97,9 +135,21 @@ function MyCart({
 
         {/* Checkout */}
         <div className="flex flex-col gap-2">
+          {totalQuantity > 3 && (
+            <div className="flex justify-between text-gray-400">
+              <p>{discountedPrice.discount}% discount</p>
+              <p className="line-through">${totalPrice}</p>
+            </div>
+          )}
+
           <div className="flex justify-between text-2xl">
             <p className="text-gray-400">Total</p>
-            <p>$300.00</p>
+
+            {totalQuantity > 3 ? (
+              <p>${discountedPrice.price}</p>
+            ) : (
+              <p>${totalPrice}</p>
+            )}
           </div>
 
           <button className="w-full rounded-lg bg-violet-600 px-2 py-4">

@@ -21,6 +21,23 @@ function HomePage() {
   const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
   const BASE_URL = import.meta.env.VITE_TMDB_BASE_URL;
 
+  // Load user cart from localStorage
+  useEffect(() => {
+    const storedCart = localStorage.getItem("cartItems");
+    if (storedCart) {
+      setCartItems(JSON.parse(storedCart));
+    }
+  }, []);
+
+  // Store user cart
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      localStorage.setItem("cartItems", JSON.stringify(cartItems));
+    } else {
+      localStorage.removeItem("cartItems");
+    }
+  }, [cartItems]);
+
   // Toggle cart
   const toggleCart = () => {
     setIsCartOpen((prev) => !prev);
@@ -29,8 +46,16 @@ function HomePage() {
   // Add item to cart
   const addToCart = (movie) => {
     setCartItems((prevCart) => {
-      const updatedCart = [...prevCart, movie];
-      return updatedCart;
+      // Check if the movie is already in the cart
+      const existingItem = prevCart.find((item) => item.id === movie.id);
+
+      if (existingItem) {
+        return prevCart.map((item) =>
+          item.id === movie.id ? { ...item, qty: item.qty + 1 } : item,
+        );
+      } else {
+        return [...prevCart, { ...movie, qty: 1 }];
+      }
     });
 
     setIsCartOpen(true);
@@ -41,6 +66,17 @@ function HomePage() {
     setCartItems((prevCart) => {
       const updatedCart = prevCart.filter((item) => item.id !== movieId);
       return updatedCart;
+    });
+  };
+
+  // Update item quantity
+  const updateQuantity = (movieId, change) => {
+    setCartItems((prevCart) => {
+      return prevCart
+        .map((item) =>
+          item.id === movieId ? { ...item, qty: item.qty + change } : item,
+        )
+        .filter((item) => item.qty > 0);
     });
   };
 
@@ -94,6 +130,7 @@ function HomePage() {
         cartItems={cartItems}
         removeFromCart={removeFromCart}
         clearCart={clearCart}
+        updateQuantity={updateQuantity}
       />
 
       {searchResults.length > 0 ? (
