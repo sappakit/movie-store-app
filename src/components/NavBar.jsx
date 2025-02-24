@@ -1,3 +1,5 @@
+import axios from "axios";
+import { useState } from "react";
 import { AiFillInstagram } from "react-icons/ai";
 import {
   FaCartShopping,
@@ -11,11 +13,48 @@ import { RiMovie2AiFill } from "react-icons/ri";
 
 import { useNavigate } from "react-router-dom";
 
-export function NavBar() {
+export function NavBar({ onSearch }) {
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Handle search input change
+  const handleSearchChange = async (e) => {
+    const query = e.target.value;
+    setSearchTerm(query);
+
+    // Generate a random price for each movie
+    const generatePrice = (movieId) => {
+      const basePrice = (movieId % 100) * 0.1 + 5;
+      const decimal = ((movieId % 13) * 0.07).toFixed(2);
+      return (basePrice + parseFloat(decimal)).toFixed(2);
+    };
+
+    if (query.length > 2) {
+      // Fetch search results
+      try {
+        const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+        const BASE_URL = import.meta.env.VITE_TMDB_BASE_URL;
+        const { data } = await axios.get(`${BASE_URL}/search/movie`, {
+          params: { api_key: API_KEY, query },
+        });
+
+        // Attach price to each movie
+        const moviesWithPrices = data.results.map((movie) => ({
+          ...movie,
+          price: generatePrice(movie.id),
+        }));
+
+        onSearch(moviesWithPrices);
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      onSearch([]);
+    }
+  };
 
   return (
-    <nav className="flex h-16 w-full items-center justify-between bg-[#030712] px-8 text-white">
+    <nav className="z-50 flex h-16 w-full items-center justify-between bg-[#030712] px-8 text-white shadow-md">
       {/* Left side */}
       <div className="flex items-center gap-12">
         {/* Website logo */}
@@ -32,7 +71,13 @@ export function NavBar() {
 
         {/* Tabs */}
         <div className="flex items-center gap-6 text-sm text-white">
-          <button className="transition-colors duration-300 hover:text-violet-500">
+          <button
+            className="transition-colors duration-300 hover:text-violet-500"
+            onClick={(event) => {
+              event.preventDefault();
+              navigate("/");
+            }}
+          >
             Home
           </button>
           <button className="transition-colors duration-300 hover:text-violet-500">
@@ -51,12 +96,12 @@ export function NavBar() {
           <input
             type="text"
             placeholder="Search ..."
+            value={searchTerm}
+            onChange={handleSearchChange}
             className="w-full bg-transparent text-sm text-white placeholder:text-gray-400 focus:outline-none"
           />
 
-          <button>
-            <IoSearch className="text-gray-400" />
-          </button>
+          <IoSearch className="text-gray-400" />
         </div>
 
         <button>
