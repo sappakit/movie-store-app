@@ -21,12 +21,14 @@ export function NavBar({
   cartItems,
   removeFromCart,
   clearCart,
-  updateQuantity
+  updateQuantity,
+  searchTerm,
+  setSearchTerm,
 }) {
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState("");
 
-  console.log("cartItems:", cartItems);
+  // Calculate total items in the cart
+  const totalItemsInCart = cartItems.reduce((sum, item) => sum + item.qty, 0);
 
   // Handle search input change
   const handleSearchChange = async (e) => {
@@ -119,8 +121,17 @@ export function NavBar({
           <button>
             <FaHeart className="h-5 w-5 text-white transition-colors duration-300 hover:text-gray-300" />
           </button>
-          <button onClick={toggleCart}>
+
+          {/* My cart icon */}
+          <button onClick={toggleCart} className="relative">
             <FaCartShopping className="h-5 w-5 text-white transition-colors duration-300 hover:text-gray-300" />
+
+            {/* Item count */}
+            {totalItemsInCart > 0 && (
+              <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-sm bg-violet-600 text-xs font-semibold">
+                {totalItemsInCart}
+              </span>
+            )}
           </button>
 
           <button className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-800">

@@ -11,17 +11,16 @@ function HomePage() {
   // Movie data
   const [movies, setMovies] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Cart
   const [cartItems, setCartItems] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  const [loading, setLoading] = useState(true);
-
   const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
   const BASE_URL = import.meta.env.VITE_TMDB_BASE_URL;
 
-  // Load user cart from localStorage
+  // Load user cart
   useEffect(() => {
     const storedCart = localStorage.getItem("cartItems");
     if (storedCart) {
@@ -38,7 +37,7 @@ function HomePage() {
     }
   }, [cartItems]);
 
-  // Toggle cart
+  // Toggle my cart div
   const toggleCart = () => {
     setIsCartOpen((prev) => !prev);
   };
@@ -94,8 +93,6 @@ function HomePage() {
   // Fetch movies
   useEffect(() => {
     const fetchMovies = async () => {
-      setLoading(true);
-
       try {
         const { data } = await axios.get(
           `${BASE_URL}/trending/movie/week?api_key=${API_KEY}`,
@@ -110,8 +107,6 @@ function HomePage() {
         setMovies(moviesWithPrices);
       } catch (error) {
         console.error(error);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -131,15 +126,17 @@ function HomePage() {
         removeFromCart={removeFromCart}
         clearCart={clearCart}
         updateQuantity={updateQuantity}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
       />
 
-      {searchResults.length > 0 ? (
-        <div className="pt-12">
+      {searchTerm.length > 2 ? (
+        <div className="flex-grow pt-12">
           <SearchMovie movies={searchResults} addToCart={addToCart} />
         </div>
       ) : (
         <>
-          <HeroSection movies={movies} />
+          <HeroSection movies={movies} addToCart={addToCart} />
           <TrendingSection movies={movies} />
           <MoreLikeThisSection movies={movies} addToCart={addToCart} />
         </>

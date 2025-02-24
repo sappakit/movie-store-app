@@ -1,8 +1,15 @@
+import { useEffect, useState } from "react";
 import { FaCartPlus } from "react-icons/fa6";
 
-function HeroSection({ movies }) {
+function HeroSection({ movies, addToCart }) {
   const IMAGE_BASE_URL = import.meta.env.VITE_TMDB_IMAGE_BASE_URL;
-  const randomIndex = Math.floor(Math.random() * Math.min(movies.length, 20));
+  const [randomIndex, setRandomIndex] = useState(null);
+
+  useEffect(() => {
+    if (movies.length > 0 && randomIndex === null) {
+      setRandomIndex(Math.floor(Math.random() * Math.min(movies.length, 20)));
+    }
+  }, [movies, randomIndex]);
 
   return (
     <section className="relative">
@@ -29,7 +36,10 @@ function HeroSection({ movies }) {
           </p>
 
           <div className="flex items-center gap-7">
-            <button className="flex items-center justify-center gap-3 rounded-lg bg-violet-600 px-5 py-3 font-medium transition-colors duration-300 hover:bg-violet-700">
+            <button
+              className="flex items-center justify-center gap-3 rounded-lg bg-violet-600 px-5 py-3 font-medium transition-colors duration-300 hover:bg-violet-700"
+              onClick={() => addToCart(movies[randomIndex])}
+            >
               <FaCartPlus className="h-4 w-4" />
               <span>Buy Now</span>
             </button>
